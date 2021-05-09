@@ -61,6 +61,7 @@ namespace VoiceEslify
                                 string voicePuginPath = $"{config.SkyrimDataFolder}\\Sound\\Voice\\{((VoiceLine)(myEnumerator.Value)).PluginName}";
                                 if (Directory.Exists(voicePuginPath))
                                 {
+                                    Console.WriteLine("Plugin voice files path found");
                                     Rename(voicePuginPath, (VoiceLine)(myEnumerator.Value));
                                 }
                             }
@@ -72,6 +73,7 @@ namespace VoiceEslify
                                 string voicePuginPath = $"{config.SkyrimDataFolder}\\Sound\\Voice\\{((VoiceLine)(myEnumerator.Value)).PluginName}";
                                 if (Directory.Exists(voicePuginPath))
                                 {
+                                    Console.WriteLine("Plugin voice files path found");
                                     Copy(voicePuginPath, (VoiceLine)(myEnumerator.Value));
                                 }
                             }
@@ -163,7 +165,7 @@ namespace VoiceEslify
             {
                 Console.WriteLine("\"" + orgFilePath + "\" found.");
                 File.Copy(orgFilePath, eslFilePath, true);
-                Console.WriteLine("\"" + eslFilePath + "\" replaced origonal.");
+                Console.WriteLine("\"" + eslFilePath + "\" origonal copied to this.");
             }
             catch (Exception ex)
             {
