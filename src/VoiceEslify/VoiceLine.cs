@@ -37,7 +37,6 @@ namespace VoiceEslify
 
         public VoiceLine(string pluginName, string formIDPre, string edid)
         {
-            IsEsl = false;
             SetPluginName(pluginName);
             SetFormIDPre(formIDPre);
             EDID = edid;
@@ -45,7 +44,6 @@ namespace VoiceEslify
 
         public VoiceLine(string pluginName, bool s, string edid, string formIDPost)
         {
-            IsEsl = false;
             SetPluginName(pluginName);
             SetFormIDPost(formIDPost);
             EDID = edid;

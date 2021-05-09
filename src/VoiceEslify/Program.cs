@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace VoiceEslify
 {
@@ -23,8 +25,12 @@ namespace VoiceEslify
                         while (!reader.EndOfStream)
                         {
                             string[] csvArr = reader.ReadLine().Split(';');
-                            VoiceLine voiceLine = new VoiceLine(csvArr[0], csvArr[1], csvArr[2]);
-                            FormList.Add(voiceLine.EDID, voiceLine);
+                            if (csvArr[2].Split(":").Length >= 2 && csvArr[2].Split(":")[1] != "" && csvArr[2].Split(":")[1] != null)
+                            {
+                                VoiceLine voiceLine = new VoiceLine(csvArr[0], csvArr[1], csvArr[2]);
+                                FormList.Add(voiceLine.EDID, voiceLine);
+                            }
+                            
                         }
                     }
 
@@ -37,13 +43,17 @@ namespace VoiceEslify
                             while (!reader.EndOfStream)
                             {
                                 string[] csvArr = reader.ReadLine().Split(';');
-                                VoiceLine voiceLine = new VoiceLine(csvArr[0], false, csvArr[2], csvArr[1]);
-                                FormList.GetValueOrDefault(voiceLine.EDID).IsEsl = voiceLine.IsEsl;
-                                FormList.GetValueOrDefault(voiceLine.EDID).SetFormIDPost(voiceLine.FormIDPost);
+                                if (csvArr[2].Split(":").Length >= 2 && csvArr[2].Split(":")[1] != "" && csvArr[2].Split(":")[1] != null)
+                                {
+                                    VoiceLine voiceLine = new VoiceLine(csvArr[0], false, csvArr[2], csvArr[1]);
+                                    FormList.GetValueOrDefault(voiceLine.EDID).IsEsl = voiceLine.IsEsl;
+                                    FormList.GetValueOrDefault(voiceLine.EDID).SetFormIDPost(voiceLine.FormIDPost);
+                                }
                             }
                         }
                         Console.WriteLine("_2PostEslify.csv loaded.");
                         IDictionaryEnumerator myEnumerator = FormList.GetEnumerator();
+                        
                         if (config.RemoveNotCopy)
                         {
                             while (myEnumerator.MoveNext())
@@ -95,7 +105,7 @@ namespace VoiceEslify
             string[] fileEntries = Directory.GetFiles(targetDirectory);
             foreach (string fileName in fileEntries)
             {
-                if (Path.GetFileName(fileName).Contains(voiceLine.FormIDPre))
+                if (Path.GetFileName(fileName).Contains(voiceLine.FormIDPre, StringComparison.OrdinalIgnoreCase))
                 {
                     RenameVoiceFile(fileName, voiceLine);
                 }
@@ -110,7 +120,7 @@ namespace VoiceEslify
 
         public static void RenameVoiceFile(string orgFilePath, VoiceLine voiceLine)
         {
-            string eslFilePath = orgFilePath.Replace(voiceLine.FormIDPre, voiceLine.FormIDPost);
+            string eslFilePath = Regex.Replace(orgFilePath, voiceLine.FormIDPre, voiceLine.FormIDPost, RegexOptions.IgnoreCase);
             if (File.Exists(orgFilePath))
             {
                 try
@@ -133,7 +143,7 @@ namespace VoiceEslify
             string[] fileEntries = Directory.GetFiles(targetDirectory);
             foreach (string fileName in fileEntries)
             {
-                if (Path.GetFileName(fileName).Contains(voiceLine.FormIDPre))
+                if (Path.GetFileName(fileName).Contains(voiceLine.FormIDPre, StringComparison.OrdinalIgnoreCase))
                 {
                     CopyVoiceFile(fileName, voiceLine);
                 }
@@ -148,22 +158,19 @@ namespace VoiceEslify
 
         public static void CopyVoiceFile(string orgFilePath, VoiceLine voiceLine)
         {
-            string eslFilePath = orgFilePath.Replace(voiceLine.FormIDPre, voiceLine.FormIDPost);
-            if (File.Exists(orgFilePath))
+            string eslFilePath = Regex.Replace(orgFilePath, voiceLine.FormIDPre, voiceLine.FormIDPost, RegexOptions.IgnoreCase);
+            try
             {
-                try
-                {
-                    Console.WriteLine("\"" + orgFilePath + "\" found.");
-                    File.Copy(orgFilePath, eslFilePath, true);
-                    Console.WriteLine("\"" + eslFilePath + "\" replaced origonal.");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    Console.ReadLine();
-                }
+                Console.WriteLine("\"" + orgFilePath + "\" found.");
+                File.Copy(orgFilePath, eslFilePath, true);
+                Console.WriteLine("\"" + eslFilePath + "\" replaced origonal.");
             }
-            else Console.WriteLine(orgFilePath + "\" not found.");
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                Console.ReadLine();
+            }
+            
         }
 
     }
