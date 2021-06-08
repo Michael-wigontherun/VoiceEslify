@@ -123,7 +123,7 @@ namespace VoiceEslify
         public static void RenameVoiceFile(string orgFilePath, VoiceLine voiceLine)
         {
             string eslFilePath = Regex.Replace(orgFilePath, voiceLine.FormIDPre, voiceLine.FormIDPost, RegexOptions.IgnoreCase);
-            if (File.Exists(orgFilePath))
+            if (File.Exists(orgFilePath) && !File.Exists(eslFilePath))
             {
                 try
                 {
@@ -137,7 +137,7 @@ namespace VoiceEslify
                     Console.ReadLine();
                 }
             }
-            else Console.WriteLine(orgFilePath + "\" not found.");
+            else Console.WriteLine(orgFilePath + "\" not found or esled file already exists");
         }
         //-----------------------------------
         public static void Copy(string targetDirectory, VoiceLine voiceLine)
@@ -161,18 +161,21 @@ namespace VoiceEslify
         public static void CopyVoiceFile(string orgFilePath, VoiceLine voiceLine)
         {
             string eslFilePath = Regex.Replace(orgFilePath, voiceLine.FormIDPre, voiceLine.FormIDPost, RegexOptions.IgnoreCase);
-            try
+            if (File.Exists(orgFilePath) && !File.Exists(eslFilePath))
             {
-                Console.WriteLine("\"" + orgFilePath + "\" found.");
-                File.Copy(orgFilePath, eslFilePath, true);
-                Console.WriteLine("\"" + eslFilePath + "\" origonal copied to this.");
+                try
+                {
+                    Console.WriteLine("\"" + orgFilePath + "\" found.");
+                    File.Copy(orgFilePath, eslFilePath, true);
+                    Console.WriteLine("\"" + eslFilePath + "\" origonal copied to this.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    Console.ReadLine();
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                Console.ReadLine();
-            }
-            
+            else Console.WriteLine(orgFilePath + "\" not found or esled file already exists");
         }
 
     }
